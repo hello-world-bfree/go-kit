@@ -1,8 +1,6 @@
 module github.com/flarco/g
 
-go 1.24
-
-toolchain go1.24.7
+go 1.25
 
 require (
 	github.com/fatih/color v1.9.0
