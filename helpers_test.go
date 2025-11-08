@@ -98,11 +98,21 @@ func TestGenToken(t *testing.T) {
 
 func TestRand(t *testing.T) {
 	val := RandInt(30)
-	assert.Greater(t, val, 0)
+	// RandInt(30) returns [0, 30), so check valid range
+	assert.GreaterOrEqual(t, val, 0)
+	assert.Less(t, val, 30)
 
 	d := time.Duration(val) * time.Minute
 	assert.EqualValues(t, val, d.Minutes())
 
+	// Test that we get different values (randomness check)
+	values := make(map[int]bool)
+	for i := 0; i < 100; i++ {
+		v := RandInt(30)
+		values[v] = true
+	}
+	// Should have at least 10 different values out of 100 tries
+	assert.GreaterOrEqual(t, len(values), 10, "Random values should be distributed")
 }
 
 func TestHash(t *testing.T) {
