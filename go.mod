@@ -1,6 +1,8 @@
 module github.com/flarco/g
 
-go 1.20
+go 1.24
+
+toolchain go1.24.7
 
 require (
 	github.com/fatih/color v1.9.0
@@ -10,6 +12,7 @@ require (
 	github.com/integrii/flaggy v1.5.2
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/json-iterator/go v1.1.12
+	github.com/mattn/go-sqlite3 v1.14.32
 	github.com/orcaman/concurrent-map/v2 v2.0.1
 	github.com/rs/zerolog v1.34.0
 	github.com/samber/lo v1.39.0
@@ -38,7 +41,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
-	github.com/mattn/go-sqlite3 v1.14.32 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
