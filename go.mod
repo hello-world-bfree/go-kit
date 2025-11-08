@@ -1,6 +1,8 @@
 module github.com/flarco/g
 
-go 1.20
+go 1.25
+
+toolchain go1.25.1
 
 require (
 	github.com/fatih/color v1.9.0
@@ -10,6 +12,7 @@ require (
 	github.com/integrii/flaggy v1.5.2
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/json-iterator/go v1.1.12
+	github.com/mattn/go-sqlite3 v1.14.32
 	github.com/orcaman/concurrent-map/v2 v2.0.1
 	github.com/rs/zerolog v1.34.0
 	github.com/samber/lo v1.39.0

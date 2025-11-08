@@ -178,38 +178,53 @@ func mapMerge(mT map[string]interface{}, mS map[string]interface{}) map[string]i
 
 // R : Replacer with optional spaces around keys
 // R("File {file} had error {error}", "file", file, "error", err)
+// Supports placeholders with optional whitespace: {key}, { key }, {  key  }, {\tkey\n}
 func R(format string, args ...string) string {
-	args2 := make([]string, len(args))
-	for i, v := range args {
-		if i%2 == 0 {
-			args2[i] = fmt.Sprintf("{%v}", v)
-		} else {
-			args2[i] = fmt.Sprint(v)
-		}
+	// Handle odd number of arguments by ignoring the last one
+	numPairs := len(args) / 2
+	if numPairs == 0 {
+		return format
 	}
-	r := strings.NewReplacer(args2...)
-	return r.Replace(format)
+
+	result := format
+	for i := 0; i < numPairs; i++ {
+		key := args[i*2]
+		value := fmt.Sprint(args[i*2+1])
+
+		// Use regexp to match {key} with optional whitespace around the key
+		// Pattern: {<whitespace>key<whitespace>}
+		pattern := fmt.Sprintf(`\{\s*%s\s*\}`, regexp.QuoteMeta(key))
+		re := regexp.MustCompile(pattern)
+		result = re.ReplaceAllString(result, value)
+	}
+
+	return result
 }
 
 // Rm is like R, for replacing with a map. replaces  {var}
+// Supports placeholders with optional whitespace: {key}, { key }, {  key  }, {\tkey\n}
 func Rm(format string, m map[string]interface{}) string {
 	if len(m) == 0 {
 		return format
 	}
 
-	var err error
-	args, i := make([]string, len(m)*4), 0
-
+	result := format
 	for k, v := range m {
-		args[i] = "{" + k + "}"
-		args[i+1], err = cast.ToStringE(v)
+		var value string
+		var err error
+		value, err = cast.ToStringE(v)
 		if err != nil {
-			args[i+1] = Marshal(v)
+			value = Marshal(v)
 		}
-		i += 2
+
+		// Use regexp to match {key} with optional whitespace around the key
+		// Pattern: {<whitespace>key<whitespace>}
+		pattern := fmt.Sprintf(`\{\s*%s\s*\}`, regexp.QuoteMeta(k))
+		re := regexp.MustCompile(pattern)
+		result = re.ReplaceAllString(result, value)
 	}
 
-	return strings.NewReplacer(args...).Replace(format)
+	return result
 }
 
 // Rme is like Rm, for replacing with a map. replaces ${var} and {var}
