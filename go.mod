@@ -2,6 +2,8 @@ module github.com/flarco/g
 
 go 1.25
 
+toolchain go1.25.1
+
 require (
 	github.com/fatih/color v1.9.0
 	github.com/getsentry/sentry-go v0.27.0
