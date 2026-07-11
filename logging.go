@@ -173,6 +173,16 @@ func (ll *LogLine) Line() string {
 		)
 	}
 
+	// cast float to int if possible since json unmarshals ints as float64
+	for i, arg := range ll.Args {
+		if _, ok := arg.(float64); ok {
+			hasDot := strings.Contains(cast.ToString(arg), ".")
+			if intVal, err := cast.ToInt64E(arg); err == nil && !hasDot {
+				ll.Args[i] = intVal
+			}
+		}
+	}
+
 	return F(timeText+levelPrefix+ll.Text, ll.Args...)
 }
 
@@ -180,10 +190,18 @@ type LogLines []LogLine
 
 func (lls LogLines) Lines() (lines []string) {
 	lines = make([]string, len(lls))
-	for _, ll := range lls {
-		lines = append(lines, ll.Line())
+	for i, ll := range lls {
+		lines[i] = ll.Line()
 	}
 	return lines
+}
+
+func (lls LogLines) Text() string {
+	lines := lls.Lines()
+	if len(lines) == 0 {
+		return ""
+	}
+	return strings.Join(lines, "\n") + "\n"
 }
 
 // NewLogHook return a new log hook
@@ -235,6 +253,11 @@ func SetZeroLogHook(h zerolog.Hook) {
 
 // SetLogHook sets a log hook
 func SetLogHook(lh *LogHook) {
+	LogHooks = []*LogHook{lh}
+}
+
+// AddLogHook adds a log hook
+func AddLogHook(lh *LogHook) {
 	LogHooks = append(LogHooks, lh)
 }
 
@@ -554,6 +577,10 @@ func TimeColored() string {
 }
 
 func Colorize(color int, text string) string {
+	if DisableColor {
+		return text
+	}
+
 	// Start and reset ANSI sequences
 	start := fmt.Sprintf("\x1b[%dm", color)
 	reset := "\x1b[0m"
